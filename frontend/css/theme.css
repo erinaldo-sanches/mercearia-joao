@@ -1,0 +1,31 @@
+/* theme.css - Tema visual da Mercearia */
+:root {
+    /* Cores principais */
+    --primary-color: #FF6B35;     /* Laranja - Energia */
+    --primary-dark: #D45A2C;
+    --secondary-color: #2A9D8F;   /* Verde - Confiança */
+    --dark-color: #264653;        /* Azul - Profissionalismo */
+    --light-color: #F8F9FA;
+    
+    /* Cores de feedback */
+    --success-color: #28A745;
+    --warning-color: #FFC107;
+    --danger-color: #DC3545;
+    
+    /* Tipografia */
+    --font-primary: 'Segoe UI', Tahoma, sans-serif;
+    
+    /* Espaçamentos */
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    
+    /* Bordas */
+    --radius-sm: 4px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    
+    /* Sombras */
+    --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+    --shadow-md: 0 4px 8px rgba(0,0,0,0.15);
+}

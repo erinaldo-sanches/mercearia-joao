@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Produtos - Mercearia do João</title>
+    
+    <!-- Font Awesome (ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Sistema de CSS Modular -->
+    <link rel="stylesheet" href="../css/theme.css">
+    <link rel="stylesheet" href="../css/global.css">
+    <link rel="stylesheet" href="../css/layout.css">
+    <link rel="stylesheet" href="../css/components.css">
+    <link rel="stylesheet" href="../css/utilities.css">
+    <link rel="stylesheet" href="../css/produtos.css">
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="page-header">
+        <div class="container">
+            <h1><i class="fas fa-box"></i> Cadastro de Produtos</h1>
+            <p>Mercearia do João - Sistema de Gestão</p>
+            
+            <div id="api-status" class="api-status disconnected">
+                <i class="fas fa-circle"></i>
+                <span>API desconectada</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="container">
+        <div class="main-layout">
+            <!-- Card: Formulário -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-plus-circle"></i> Novo Produto
+                    </h2>
+                    <p class="text-muted">Preencha os dados do produto</p>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Mensagens de Feedback -->
+                    <div id="form-feedback" class="form-feedback" style="display: none;"></div>
+                    
+                    <!-- Formulário -->
+                    <form id="form-produto" class="product-form">
+                        <div class="form-group">
+                            <label for="nome" class="form-label required">
+                                <i class="fas fa-tag"></i> Nome do Produto
+                            </label>
+                            <input type="text" id="nome" class="form-control"
+                                   placeholder="Ex: Arroz 5kg" maxlength="100" required>
+                            <div id="nome-error" class="form-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="preco" class="form-label required">
+                                <i class="fas fa-dollar-sign"></i> Preço de Venda (R$)
+                            </label>
+                            <input type="number" id="preco" class="form-control"
+                                   step="0.01" min="0.01" placeholder="0.00" required>
+                            <div id="preco-error" class="form-error"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="estoque" class="form-label required">
+                                <i class="fas fa-boxes"></i> Quantidade em Estoque
+                            </label>
+                            <input type="number" id="estoque" class="form-control"
+                                   min="0" placeholder="0" required>
+                            <div id="estoque-error" class="form-error"></div>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save"></i> Salvar Produto
+                            </button>
+                            <button type="button" id="btn-limpar" class="btn btn-secondary btn-block">
+                                <i class="fas fa-eraser"></i> Limpar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Card: Lista -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">
+                        <i class="fas fa-list"></i> Produtos Cadastrados
+                    </h2>
+                    <div class="products-list-header">
+                        <div id="products-count" class="products-count">
+                            Total: <span id="total-count">0</span> produtos
+                        </div>
+                        <button id="btn-carregar" class="btn btn-secondary btn-sm">
+                            <i class="fas fa-sync-alt"></i> Atualizar
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <!-- Loading -->
+                    <div id="loading-state" class="loading-state">
+                        <div class="loading-spinner"></div>
+                        <p>Carregando produtos...</p>
+                    </div>
+                    
+                    <!-- Estado Vazio -->
+                    <div id="empty-state" class="empty-state" style="display: none;">
+                        <i class="fas fa-box-open"></i>
+                        <h3>Nenhum produto cadastrado</h3>
+                        <p>Use o formulário para cadastrar o primeiro produto!</p>
+                    </div>
+                    
+                    <!-- Tabela -->
+                    <div id="products-table-container" class="products-table-container" style="display: none;">
+                        <table class="table products-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nome</th>
+                                    <th>Preço</th>
+                                    <th>Estoque</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-table-body">
+                                <!-- JavaScript preenche aqui -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Edição -->
+    <div id="modal-editar" class="modal-overlay" style="display: none;">
+        <div class="modal animate-slideInUp">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-edit"></i> Editar Produto
+                </h3>
+                <button type="button" class="modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <div class="modal-body">
+                <form id="form-editar" class="product-form">
+                    <input type="hidden" id="edit-id">
+                    
+                    <div class="form-group">
+                        <label for="edit-nome" class="form-label required">Nome</label>
+                        <input type="text" id="edit-nome" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-preco" class="form-label required">Preço (R$)</label>
+                        <input type="number" id="edit-preco" class="form-control" step="0.01" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-estoque" class="form-label required">Estoque</label>
+                        <input type="number" id="edit-estoque" class="form-control" required>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> Salvar
+                        </button>
+                        <button type="button" id="btn-cancelar" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../js/produtos.js"></script>
+    
+    <script>
+        // Configuração da API
+        const API_BASE_URL = 'http://localhost:8000';
+        
+        // Testar conexão
+        async function testarConexaoAPI() {
+            try {
+                await axios.get(`${API_BASE_URL}/health`, { timeout: 3000 });
+                document.getElementById('api-status').className = 'api-status connected';
+                document.getElementById('api-status').innerHTML = `
+                    <i class="fas fa-circle"></i>
+                    <span>API conectada</span>
+                `;
+            } catch (error) {
+                document.getElementById('api-status').className = 'api-status disconnected';
+                document.getElementById('api-status').innerHTML = `
+                    <i class="fas fa-circle"></i>
+                    <span>API desconectada - Inicie o backend</span>
+                `;
+            }
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', testarConexaoAPI);
+    </script>
+</body>
+</html>
