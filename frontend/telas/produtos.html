@@ -1,216 +1,304 @@
 <!DOCTYPE html>
+<!-- Declaração do tipo de documento e versão HTML -->
 <html lang="pt-BR">
+<!-- Elemento raiz da página, lang define o idioma -->
+
 <head>
+    <!-- Cabeçalho - contém metadados e links para recursos -->
     <meta charset="UTF-8">
+    <!-- Define a codificação de caracteres (acentos, ç, etc) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro de Produtos - Mercearia do João</title>
+    <!-- Configura a viewport para responsividade -->
     
-    <!-- Font Awesome (ícones) -->
+    <title>Produtos - Mercearia do João</title>
+    <!-- Título que aparece na aba do navegador -->
+    
+    <!-- Font Awesome - Biblioteca de ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Sistema de CSS Modular -->
-    <link rel="stylesheet" href="../css/theme.css">
+    <!-- Nosso arquivo CSS principal -->
     <link rel="stylesheet" href="../css/global.css">
-    <link rel="stylesheet" href="../css/layout.css">
-    <link rel="stylesheet" href="../css/components.css">
-    <link rel="stylesheet" href="../css/utilities.css">
-    <link rel="stylesheet" href="../css/produtos.css">
+    
+    <!-- Estilos inline mínimos (específicos desta página) -->
+    <style>
+        /* Estilos muito específicos que não valem a pena colocar no global.css */
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: rgba(46, 147, 60, 0.15);
+            color: #2E933C;
+        }
+        
+        .badge-warning {
+            background: rgba(240, 200, 8, 0.15);
+            color: #B38F00;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .input-group input {
+            flex: 1;
+        }
+    </style>
 </head>
+
 <body>
-    <!-- Cabeçalho -->
-    <header class="page-header">
-        <div class="container">
-            <h1><i class="fas fa-box"></i> Cadastro de Produtos</h1>
-            <p>Mercearia do João - Sistema de Gestão</p>
-            
-            <div id="api-status" class="api-status disconnected">
-                <i class="fas fa-circle"></i>
-                <span>API desconectada</span>
+    <!-- Corpo da página - todo conteúdo visível fica aqui -->
+    
+    <!-- CONTAINER PRINCIPAL -->
+    <!-- Centraliza e limita a largura do conteúdo -->
+    <div class="container">
+        
+        <!-- CABEÇALHO DA PÁGINA -->
+        <header class="header">
+            <!-- Elemento semântico para cabeçalho -->
+            <h1>
+                <!-- Título principal da página -->
+                <i class="fas fa-store"></i> <!-- Ícone -->
+                Mercearia do João
+            </h1>
+            <p class="subtitle">
+                Sistema de Gestão - Controle de Produtos
+            </p>
+            <div id="apiStatus" class="text-muted">
+                <!-- Elemento que mostrará o status da API -->
+                <i class="fas fa-spinner fa-spin"></i> Verificando conexão...
             </div>
-        </div>
-    </header>
-
-    <!-- Conteúdo Principal -->
-    <main class="container">
-        <div class="main-layout">
-            <!-- Card: Formulário -->
-            <div class="card">
-                <div class="card-header">
+        </header>
+        
+        <!-- CARD DE AÇÕES PRINCIPAIS -->
+        <div class="card">
+            <div class="d-flex justify-between align-center">
+                <!-- Título da seção -->
+                <div>
                     <h2 class="card-title">
-                        <i class="fas fa-plus-circle"></i> Novo Produto
+                        <i class="fas fa-boxes"></i> Produtos
                     </h2>
-                    <p class="text-muted">Preencha os dados do produto</p>
+                    <p class="text-muted">
+                        Gerencie o estoque da sua mercearia
+                    </p>
                 </div>
                 
-                <div class="card-body">
-                    <!-- Mensagens de Feedback -->
-                    <div id="form-feedback" class="form-feedback" style="display: none;"></div>
-                    
-                    <!-- Formulário -->
-                    <form id="form-produto" class="product-form">
-                        <div class="form-group">
-                            <label for="nome" class="form-label required">
-                                <i class="fas fa-tag"></i> Nome do Produto
-                            </label>
-                            <input type="text" id="nome" class="form-control"
-                                   placeholder="Ex: Arroz 5kg" maxlength="100" required>
-                            <div id="nome-error" class="form-error"></div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="preco" class="form-label required">
-                                <i class="fas fa-dollar-sign"></i> Preço de Venda (R$)
-                            </label>
-                            <input type="number" id="preco" class="form-control"
-                                   step="0.01" min="0.01" placeholder="0.00" required>
-                            <div id="preco-error" class="form-error"></div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="estoque" class="form-label required">
-                                <i class="fas fa-boxes"></i> Quantidade em Estoque
-                            </label>
-                            <input type="number" id="estoque" class="form-control"
-                                   min="0" placeholder="0" required>
-                            <div id="estoque-error" class="form-error"></div>
-                        </div>
-                        
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-save"></i> Salvar Produto
-                            </button>
-                            <button type="button" id="btn-limpar" class="btn btn-secondary btn-block">
-                                <i class="fas fa-eraser"></i> Limpar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <!-- Card: Lista -->
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-title">
-                        <i class="fas fa-list"></i> Produtos Cadastrados
-                    </h2>
-                    <div class="products-list-header">
-                        <div id="products-count" class="products-count">
-                            Total: <span id="total-count">0</span> produtos
-                        </div>
-                        <button id="btn-carregar" class="btn btn-secondary btn-sm">
-                            <i class="fas fa-sync-alt"></i> Atualizar
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="card-body">
-                    <!-- Loading -->
-                    <div id="loading-state" class="loading-state">
-                        <div class="loading-spinner"></div>
-                        <p>Carregando produtos...</p>
-                    </div>
-                    
-                    <!-- Estado Vazio -->
-                    <div id="empty-state" class="empty-state" style="display: none;">
-                        <i class="fas fa-box-open"></i>
-                        <h3>Nenhum produto cadastrado</h3>
-                        <p>Use o formulário para cadastrar o primeiro produto!</p>
-                    </div>
-                    
-                    <!-- Tabela -->
-                    <div id="products-table-container" class="products-table-container" style="display: none;">
-                        <table class="table products-table">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Nome</th>
-                                    <th>Preço</th>
-                                    <th>Estoque</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="products-table-body">
-                                <!-- JavaScript preenche aqui -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Modal de Edição -->
-    <div id="modal-editar" class="modal-overlay" style="display: none;">
-        <div class="modal animate-slideInUp">
-            <div class="modal-header">
-                <h3 class="modal-title">
-                    <i class="fas fa-edit"></i> Editar Produto
-                </h3>
-                <button type="button" class="modal-close">
-                    <i class="fas fa-times"></i>
+                <!-- BOTÃO NOVO PRODUTO -->
+                <button id="btnNovoProduto" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Novo Produto
                 </button>
             </div>
             
-            <div class="modal-body">
-                <form id="form-editar" class="product-form">
-                    <input type="hidden" id="edit-id">
-                    
-                    <div class="form-group">
-                        <label for="edit-nome" class="form-label required">Nome</label>
-                        <input type="text" id="edit-nome" class="form-control" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="edit-preco" class="form-label required">Preço (R$)</label>
-                        <input type="number" id="edit-preco" class="form-control" step="0.01" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="edit-estoque" class="form-label required">Estoque</label>
-                        <input type="number" id="edit-estoque" class="form-control" required>
-                    </div>
-                    
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-success">
-                            <i class="fas fa-save"></i> Salvar
+            <!-- BARRA DE BUSCA -->
+            <div class="row mt-3">
+                <div class="col">
+                    <div class="input-group">
+                        <input type="text" 
+                               id="inputBusca" 
+                               class="form-control" 
+                               placeholder="Buscar produto por nome...">
+                        <button id="btnBuscar" class="btn btn-secondary">
+                            <i class="fas fa-search"></i> Buscar
                         </button>
-                        <button type="button" id="btn-cancelar" class="btn btn-secondary">
+                        <button id="btnLimparBusca" class="btn">
+                            <i class="fas fa-times"></i> Limpar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CARDS DE ESTATÍSTICAS -->
+        <!-- Exemplo de grid responsivo -->
+        <div class="row">
+            <!-- CARD 1: TOTAL DE PRODUTOS -->
+            <div class="col">
+                <div class="card text-center">
+                    <h3><i class="fas fa-box"></i> Total de Produtos</h3>
+                    <p id="totalProdutos" style="font-size: 2rem; font-weight: bold; color: var(--cor-primaria);">
+                        0
+                    </p>
+                </div>
+            </div>
+            
+            <!-- CARD 2: ESTOQUE BAIXO -->
+            <div class="col">
+                <div class="card text-center">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Estoque Baixo</h3>
+                    <p id="estoqueBaixo" style="font-size: 2rem; font-weight: bold; color: var(--cor-perigo);">
+                        0
+                    </p>
+                </div>
+            </div>
+            
+            <!-- CARD 3: VALOR TOTAL -->
+            <div class="col">
+                <div class="card text-center">
+                    <h3><i class="fas fa-dollar-sign"></i> Valor Total</h3>
+                    <p id="valorTotal" style="font-size: 2rem; font-weight: bold; color: var(--cor-secundaria);">
+                        R$ 0,00
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TABELA DE PRODUTOS -->
+        <div class="card">
+            <div class="card-header d-flex justify-between align-center">
+                <h3 class="card-title">
+                    <i class="fas fa-list"></i> Lista de Produtos
+                </h3>
+                <button id="btnRecarregar" class="btn btn-sm">
+                    <i class="fas fa-sync-alt"></i> Recarregar
+                </button>
+            </div>
+            
+            <!-- TABELA -->
+            <!-- Elemento semântico para dados tabulares -->
+            <table class="table">
+                <thead>
+                    <!-- Cabeçalho da tabela -->
+                    <tr>
+                        <!-- Table Row - Linha da tabela -->
+                        <th>ID</th> <!-- Table Header - Célula de cabeçalho -->
+                        <th>Produto</th>
+                        <th>Preço</th>
+                        <th>Estoque</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaProdutos">
+                    <!-- Table Body - Corpo da tabela -->
+                    <!-- O JavaScript vai preencher este conteúdo -->
+                    <tr>
+                        <td colspan="6" class="text-center">
+                            <!-- Mensagem inicial enquanto carrega -->
+                            <div style="padding: 40px;">
+                                <i class="fas fa-spinner fa-spin fa-2x" 
+                                       style="color: #999; margin-bottom: 15px;"></i>
+                                <p style="color: #666;">Carregando produtos...</p>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- MODAL DE PRODUTO -->
+    <!-- Janela flutuante para formulários -->
+    <div id="modalProduto" class="modal">
+        <div class="modal-content">
+            <!-- Cabeçalho do Modal -->
+            <div class="modal-header">
+                <h3 id="modalTitulo">
+                    <i class="fas fa-box"></i> Novo Produto
+                </h3>
+                <button id="btnFecharModal" 
+                        style="background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">
+                    &times; <!-- Caractere X -->
+                </button>
+            </div>
+            
+            <!-- Corpo do Modal - Formulário -->
+            <div class="modal-body">
+                <!-- FORMULÁRIO -->
+                <!-- Elemento para entrada de dados do usuário -->
+                <form id="formProduto">
+                    <!-- Campo oculto para armazenar o ID do produto (em edição) -->
+                    <input type="hidden" id="produtoId">
+                    
+                    <!-- GRUPO: NOME DO PRODUTO -->
+                    <div class="form-group">
+                        <label for="nome" class="form-label">
+                            Nome do Produto <span style="color: var(--cor-perigo);">*</span>
+                        </label>
+                        <input type="text" 
+                               id="nome" 
+                               class="form-control" 
+                               required 
+                               placeholder="Ex: Arroz Tipo 1 - 5kg"
+                               maxlength="100">
+                        <small class="text-muted">Obrigatório. Máximo 100 caracteres.</small>
+                    </div>
+                    
+                    <!-- GRUPO: DESCRIÇÃO -->
+                    <div class="form-group">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <textarea id="descricao" 
+                                  class="form-control" 
+                                  rows="3"
+                                  placeholder="Descrição detalhada do produto..."
+                                  maxlength="255"></textarea>
+                        <small class="text-muted">Opcional. Máximo 255 caracteres.</small>
+                    </div>
+                    
+                    <!-- LINHA COM DOIS CAMPOS LADO A LADO -->
+                    <div class="row">
+                        <!-- COLUNA: PREÇO -->
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="preco" class="form-label">
+                                    Preço de Venda (R$) <span style="color: var(--cor-perigo);">*</span>
+                                </label>
+                                <input type="number" 
+                                       id="preco" 
+                                       class="form-control" 
+                                       step="0.01" 
+                                       min="0.01" 
+                                       required 
+                                       placeholder="0.00">
+                                <small class="text-muted">Obrigatório. Ex: 25.90</small>
+                            </div>
+                        </div>
+                        
+                        <!-- COLUNA: ESTOQUE -->
+                        <div class="col">
+                            <div class="form-group">
+                                <label for="estoque" class="form-label">Quantidade em Estoque</label>
+                                <input type="number" 
+                                       id="estoque" 
+                                       class="form-control" 
+                                       min="0" 
+                                       value="0" 
+                                       placeholder="0">
+                                <small class="text-muted">Quantidade inicial no estoque.</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- RODAPÉ DO MODAL -->
+                    <div class="modal-footer">
+                        <button type="button" id="btnCancelar" class="btn">
                             <i class="fas fa-times"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Salvar Produto
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="../js/produtos.js"></script>
     
-    <script>
-        // Configuração da API
-        const API_BASE_URL = 'http://localhost:8000';
-        
-        // Testar conexão
-        async function testarConexaoAPI() {
-            try {
-                await axios.get(`${API_BASE_URL}/health`, { timeout: 3000 });
-                document.getElementById('api-status').className = 'api-status connected';
-                document.getElementById('api-status').innerHTML = `
-                    <i class="fas fa-circle"></i>
-                    <span>API conectada</span>
-                `;
-            } catch (error) {
-                document.getElementById('api-status').className = 'api-status disconnected';
-                document.getElementById('api-status').innerHTML = `
-                    <i class="fas fa-circle"></i>
-                    <span>API desconectada - Inicie o backend</span>
-                `;
-            }
-        }
-        
-        // Inicializar
-        document.addEventListener('DOMContentLoaded', testarConexaoAPI);
-    </script>
+    <!-- SCRIPTS JAVASCRIPT -->
+    <!-- Colocados no final para não bloquear o carregamento da página -->
+    
+    <!-- Scripts - ORDEM CRÍTICA! -->
+    <!-- 1. Primeiro: Axios (biblioteca externa) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <!-- 2. Segundo: Nossa API (DEVE vir antes de produtos.js) -->
+    <script src="../js/api.js"></script>
+
+    <!-- 3. Terceiro: Nossa lógica da página (DEPENDE da API) -->
+    <script src="../js/telas/produtos.js"></script>
+
 </body>
 </html>

@@ -15,7 +15,7 @@ load_dotenv()
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not DATABASE_URL:
-    raise ValueError("❌ DATABASE_URL não configurada no arquivo .env")
+    raise ValueError("DATABASE_URL não configurada no arquivo .env")
 
 # Configurar conexão com banco
 engine = create_engine(
@@ -33,7 +33,7 @@ SessionLocal = sessionmaker(
 )
 
 # Base para todos os models
-# ⚠️ IMPORTANTE: Agora vem de sqlalchemy.orm (não mais de ext.declarative)
+# IMPORTANTE: Agora vem de sqlalchemy.orm (não mais de ext.declarative)
 Base = declarative_base()
 
 def get_db():

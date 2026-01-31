@@ -16,7 +16,7 @@ load_dotenv()
 
 # Cria tabelas no banco (se não existirem)
 Base.metadata.create_all(bind=engine)
-print("✅ Tabelas criadas/verificadas")
+print("Tabelas criadas/verificadas")
 
 # Configura aplicação FastAPI
 app = FastAPI(
@@ -31,11 +31,11 @@ app = FastAPI(
 # Configura CORS (permite frontend acessar API)
 origins = os.getenv("ALLOWED_ORIGINS", "").split(",")
 if not any(origins):
-    origins = ["http://localhost:5500", "http://127.0.0.1:5500"]
+    origins = ["http://localhost:3000", "http://127.0.0.1:3000", "http://localhost:5500"]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,      # Origins permitidas
+    allow_origins=["*"],      # Origins permitidas
     allow_credentials=True,     # Permite cookies
     allow_methods=["*"],        # Todos métodos HTTP
     allow_headers=["*"],        # Todos cabeçalhos
